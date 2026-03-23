@@ -2,7 +2,7 @@
 
 client_id = "71d2bfd7597a9aa85cbacd7890207fbd"
 name = "Shofeed"
-application_url = "https://shopify.dev/apps/default-app-home"
+application_url = "https://shofeed-production.up.railway.app"
 embedded = true
 
 [build]
@@ -25,4 +25,8 @@ api_version = "2026-04"
 scopes = "read_products"
 
 [auth]
-redirect_urls = [ "https://shopify.dev/apps/default-app-home/api/auth" ]
+redirect_urls = [
+  "https://shofeed-production.up.railway.app/auth/callback",
+  "https://shofeed-production.up.railway.app/auth/shopify/callback",
+  "https://shofeed-production.up.railway.app/api/auth/callback",
+]
