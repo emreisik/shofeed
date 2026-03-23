@@ -21,7 +21,7 @@ import {
 import { TitleBar } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
-import { randomBytes } from "crypto";
+import { generateFeedToken } from "../utils/token.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
@@ -36,7 +36,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     feedSettings = await prisma.feedSettings.create({
       data: {
         shop,
-        feedToken: randomBytes(24).toString("hex"),
+        feedToken: generateFeedToken(),
         title: shop.replace(".myshopify.com", "") + " Feed",
       },
     });
@@ -80,7 +80,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     await prisma.feedSettings.update({
       where: { shop },
       data: {
-        feedToken: randomBytes(24).toString("hex"),
+        feedToken: generateFeedToken(),
       },
     });
 
