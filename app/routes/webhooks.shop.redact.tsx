@@ -1,0 +1,19 @@
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { authenticate } from "../shopify.server";
+import db from "../db.server";
+
+// GDPR mandatory webhook: shop/redact
+// Shopify sends this 48 hours after an app is uninstalled.
+// We must delete all shop data from our database.
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const { shop, topic } = await authenticate.webhook(request);
+  console.log(`Received ${topic} webhook for ${shop}`);
+
+  // Delete feed settings for this shop
+  await db.feedSettings.deleteMany({ where: { shop } });
+
+  // Delete any remaining sessions
+  await db.session.deleteMany({ where: { shop } });
+
+  return new Response();
+};
