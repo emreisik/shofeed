@@ -1,6 +1,6 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "71d2bfd7597a9aa85cbacd7890207fbd"
+client_id = "83a6f05090e2d6219f802b5f12ef8e90"
 name = "Shofeed"
 application_url = "https://shofeed-production.up.railway.app"
 embedded = true
