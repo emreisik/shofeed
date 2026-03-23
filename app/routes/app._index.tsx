@@ -26,7 +26,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session, admin } = await authenticate.admin(request);
   const shop = session.shop;
 
-  // FeedSettings yoksa olustur
+  // Create FeedSettings if not exists
   let feedSettings = await prisma.feedSettings.findUnique({
     where: { shop },
   });
@@ -40,7 +40,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     });
   }
 
-  // Urun sayisini al
+  // Get product count
   const countResponse = await admin.graphql(`#graphql
     query {
       productsCount(query: "status:active") {
@@ -87,7 +87,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         facebookEnabled: formData.get("facebookEnabled") === "true",
       },
     });
-    return json({ success: true, message: "Ayarlar kaydedildi" });
+    return json({ success: true, message: "Settings saved successfully" });
   }
 
   if (intent === "regenerateToken") {
@@ -99,12 +99,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return json({
       success: true,
       message:
-        "Feed token yenilendi. Yeni URL'leri platformlara tekrar eklemeniz gerekiyor.",
+        "Feed token regenerated. Please update the new URLs on your platforms.",
       newToken,
     });
   }
 
-  return json({ success: false, message: "Bilinmeyen islem" });
+  return json({ success: false, message: "Unknown action" });
 };
 
 export default function FeedDashboard() {
@@ -164,20 +164,20 @@ export default function FeedDashboard() {
   }, [submit]);
 
   const currencyOptions = [
-    { label: "TRY - Turk Lirasi", value: "TRY" },
-    { label: "USD - ABD Dolari", value: "USD" },
+    { label: "TRY - Turkish Lira", value: "TRY" },
+    { label: "USD - US Dollar", value: "USD" },
     { label: "EUR - Euro", value: "EUR" },
-    { label: "GBP - Ingiliz Sterlini", value: "GBP" },
+    { label: "GBP - British Pound", value: "GBP" },
   ];
 
   const conditionOptions = [
-    { label: "Yeni", value: "new" },
-    { label: "Kullanilmis", value: "used" },
-    { label: "Yenilenmis", value: "refurbished" },
+    { label: "New", value: "new" },
+    { label: "Used", value: "used" },
+    { label: "Refurbished", value: "refurbished" },
   ];
 
   return (
-    <Page title="ShoFeed - Feed Yonetimi">
+    <Page title="ShoFeed - Feed Management">
       <BlockStack gap="500">
         {actionData?.message && (
           <Banner
@@ -187,13 +187,13 @@ export default function FeedDashboard() {
           />
         )}
 
-        {/* Ozet Bilgiler */}
+        {/* Summary Cards */}
         <Layout>
           <Layout.Section variant="oneThird">
             <Card>
               <BlockStack gap="200">
                 <Text as="h3" variant="headingSm">
-                  Aktif Urunler
+                  Active Products
                 </Text>
                 <Text as="p" variant="headingLg">
                   {productCount}
@@ -208,7 +208,7 @@ export default function FeedDashboard() {
                   Google Feed
                 </Text>
                 <Badge tone={googleEnabled ? "success" : "critical"}>
-                  {googleEnabled ? "Aktif" : "Pasif"}
+                  {googleEnabled ? "Active" : "Inactive"}
                 </Badge>
               </BlockStack>
             </Card>
@@ -220,24 +220,24 @@ export default function FeedDashboard() {
                   Facebook Feed
                 </Text>
                 <Badge tone={facebookEnabled ? "success" : "critical"}>
-                  {facebookEnabled ? "Aktif" : "Pasif"}
+                  {facebookEnabled ? "Active" : "Inactive"}
                 </Badge>
               </BlockStack>
             </Card>
           </Layout.Section>
         </Layout>
 
-        {/* Feed URL'leri */}
+        {/* Feed URLs */}
         <Layout>
           <Layout.Section>
             <Card>
               <BlockStack gap="400">
                 <Text as="h2" variant="headingMd">
-                  Feed URL'leri
+                  Feed URLs
                 </Text>
                 <Text as="p" variant="bodySm" tone="subdued">
-                  Bu URL'leri Google Merchant Center ve Facebook Commerce
-                  Manager'a ekleyin
+                  Add these URLs to Google Merchant Center and Facebook Commerce
+                  Manager
                 </Text>
 
                 <Divider />
@@ -260,7 +260,7 @@ export default function FeedDashboard() {
                       onClick={() => handleCopy(googleFeedUrl, "google")}
                       disabled={!googleEnabled}
                     >
-                      {copied === "google" ? "Kopyalandi!" : "Kopyala"}
+                      {copied === "google" ? "Copied!" : "Copy"}
                     </Button>
                   </InlineStack>
                 </BlockStack>
@@ -285,7 +285,7 @@ export default function FeedDashboard() {
                       onClick={() => handleCopy(facebookFeedUrl, "facebook")}
                       disabled={!facebookEnabled}
                     >
-                      {copied === "facebook" ? "Kopyalandi!" : "Kopyala"}
+                      {copied === "facebook" ? "Copied!" : "Copy"}
                     </Button>
                   </InlineStack>
                 </BlockStack>
@@ -298,7 +298,7 @@ export default function FeedDashboard() {
                     tone="critical"
                     onClick={handleRegenerateToken}
                   >
-                    Token Yenile
+                    Regenerate Token
                   </Button>
                 </InlineStack>
               </BlockStack>
@@ -306,25 +306,25 @@ export default function FeedDashboard() {
           </Layout.Section>
         </Layout>
 
-        {/* Ayarlar */}
+        {/* Settings */}
         <Layout>
           <Layout.Section>
             <Card>
               <BlockStack gap="400">
                 <Text as="h2" variant="headingMd">
-                  Feed Ayarlari
+                  Feed Settings
                 </Text>
 
                 <TextField
-                  label="Feed Basligi"
+                  label="Feed Title"
                   value={title}
                   onChange={setTitle}
                   autoComplete="off"
-                  helpText="Google ve Facebook'ta gorunecek feed adi"
+                  helpText="The feed name displayed on Google and Facebook"
                 />
 
                 <TextField
-                  label="Feed Aciklamasi"
+                  label="Feed Description"
                   value={description}
                   onChange={setDescription}
                   autoComplete="off"
@@ -334,7 +334,7 @@ export default function FeedDashboard() {
                 <InlineStack gap="400">
                   <Box width="50%">
                     <Select
-                      label="Para Birimi"
+                      label="Currency"
                       options={currencyOptions}
                       value={currency}
                       onChange={setCurrency}
@@ -342,7 +342,7 @@ export default function FeedDashboard() {
                   </Box>
                   <Box width="50%">
                     <Select
-                      label="Urun Durumu"
+                      label="Product Condition"
                       options={conditionOptions}
                       value={productType}
                       onChange={setProductType}
@@ -353,13 +353,13 @@ export default function FeedDashboard() {
                 <Divider />
 
                 <Checkbox
-                  label="Google Shopping Feed Aktif"
+                  label="Google Shopping Feed Enabled"
                   checked={googleEnabled}
                   onChange={setGoogleEnabled}
                 />
 
                 <Checkbox
-                  label="Facebook / Meta Catalog Feed Aktif"
+                  label="Facebook / Meta Catalog Feed Enabled"
                   checked={facebookEnabled}
                   onChange={setFacebookEnabled}
                 />
@@ -368,7 +368,7 @@ export default function FeedDashboard() {
 
                 <InlineStack align="end">
                   <Button variant="primary" onClick={handleSave}>
-                    Kaydet
+                    Save
                   </Button>
                 </InlineStack>
               </BlockStack>
@@ -380,7 +380,7 @@ export default function FeedDashboard() {
           <Layout.Section>
             <Box paddingBlockEnd="400">
               <Text as="p" variant="bodySm" tone="subdued">
-                Magaza: {shop}
+                Store: {shop}
               </Text>
             </Box>
           </Layout.Section>

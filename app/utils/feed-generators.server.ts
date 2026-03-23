@@ -1,4 +1,4 @@
-// XML feed generator'ları - Google Shopping ve Facebook Catalog
+// XML feed generators - Google Shopping and Facebook Catalog
 
 interface ProductVariant {
   id: string;
@@ -93,7 +93,7 @@ function buildItemXml(
     `      <g:image_link>${escapeXml(imageUrl)}</g:image_link>`,
   ];
 
-  // Ek resimler (max 10)
+  // Additional images (max 10)
   product.images.slice(1, 11).forEach((img) => {
     lines.push(
       `      <g:additional_image_link>${escapeXml(img.url)}</g:additional_image_link>`,

@@ -13,7 +13,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const token = url.searchParams.get("token");
 
   if (!shop || !token) {
-    return new Response("shop ve token parametreleri gereklidir", {
+    return new Response("Missing required parameters: shop and token", {
       status: 400,
     });
   }
@@ -23,11 +23,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 
   if (!feedSettings || feedSettings.feedToken !== token) {
-    return new Response("Gecersiz token", { status: 403 });
+    return new Response("Invalid token", { status: 403 });
   }
 
   if (!feedSettings.googleEnabled) {
-    return new Response("Google feed devre disi", { status: 404 });
+    return new Response("Google feed is disabled", { status: 404 });
   }
 
   try {
@@ -50,7 +50,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       },
     });
   } catch (error) {
-    console.error("Google feed olusturma hatasi:", error);
-    return new Response("Feed olusturulamadi", { status: 500 });
+    console.error("Google feed generation error:", error);
+    return new Response("Failed to generate feed", { status: 500 });
   }
 };

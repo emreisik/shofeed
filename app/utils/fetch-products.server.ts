@@ -1,4 +1,4 @@
-// Shopify Admin GraphQL API ile ürünleri çekme
+// Fetch products via Shopify Admin GraphQL API
 
 import type { FeedProduct } from "./feed-generators.server";
 

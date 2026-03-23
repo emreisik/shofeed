@@ -14,7 +14,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   try {
     await authenticate.admin(request);
   } catch (error) {
-    // Auth redirect'leri (Response) tekrar throw et
+    // Re-throw auth redirects (Response)
     if (error instanceof Response) {
       throw error;
     }
@@ -37,7 +37,7 @@ export default function App() {
   if (error) {
     return (
       <div style={{ padding: "40px", fontFamily: "sans-serif", color: "red" }}>
-        <h1>Auth Hatasi</h1>
+        <h1>Auth Error</h1>
         <pre>{error}</pre>
         <p>SHOPIFY_API_KEY: {apiKey ? "SET" : "MISSING"}</p>
       </div>
@@ -48,7 +48,7 @@ export default function App() {
     <AppProvider isEmbeddedApp apiKey={apiKey}>
       <NavMenu>
         <Link to="/app" rel="home">
-          Feed Yonetimi
+          Feed Management
         </Link>
       </NavMenu>
       <Outlet />
@@ -62,7 +62,7 @@ export function ErrorBoundary() {
 
   return (
     <div style={{ padding: "40px", fontFamily: "sans-serif", color: "red" }}>
-      <h1>Uygulama Hatasi</h1>
+      <h1>Application Error</h1>
       <pre>
         {error instanceof Error ? error.message : JSON.stringify(error)}
       </pre>
