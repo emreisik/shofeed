@@ -43,7 +43,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   // Get product count
   const countResponse = await admin.graphql(`#graphql
     query {
-      productsCount(query: "status:active") {
+      productsCount(query: "status:active", limit: null) {
         count
       }
     }
